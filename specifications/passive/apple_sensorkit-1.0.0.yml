@@ -10,6 +10,12 @@ data:
     value_schema: .passive.apple.sensorkit.SensorKitAcceleration
     sample_rate:
       dynamic: true
+  - type: GYROSCOPE
+    topic: sensorkit_rotation_rate
+    value_schema: .passive.apple.sensorkit.SensorKitRotationRate
+    sample_rate:
+      dynamic: true
+    unit: RADAIAN_PER_SEC
   - type: AMBIENT_LIGHT
     topic: sensorkit_ambient_light
     value_schema: .passive.apple.sensorkit.SensorKitAmbientLight

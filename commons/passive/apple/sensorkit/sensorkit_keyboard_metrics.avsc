@@ -6,6 +6,7 @@
   "fields": [
     { "name": "time", "type": "double", "doc": "Device timestamp in UTC (s)." },
     { "name": "timeReceived", "type": "double", "doc": "Device receiver timestamp in UTC (s)." },
+    { "name": "device", "type": "string", "doc": "Device model." },
     { "name": "totalWords", "type": "int", "doc": "The total number of typed words for the keyboard." },
     { "name": "totalAlteredWords", "type": "int", "doc": "The total number of altered words for the keyboard." },
     { "name": "totalTaps", "type": "int", "doc": "The total number of taps for the keyboard." },
