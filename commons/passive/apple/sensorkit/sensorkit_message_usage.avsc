@@ -6,6 +6,7 @@
   "fields": [
     { "name": "time", "type": "double", "doc": "Device timestamp in UTC (s)." },
     { "name": "timeReceived", "type": "double", "doc": "Device receiver timestamp in UTC (s)." },
+    { "name": "device", "type": "string", "doc": "Device model." },
     { "name": "duration", "type": "double", "doc": "The duration that the report spans (s)." },
     { "name": "totalIncomingMessages", "type": "int", "doc": "The number of messages the user receives." },
     { "name": "totalOutgoingMessages", "type": "int", "doc": "The number of messages the user sends." },
