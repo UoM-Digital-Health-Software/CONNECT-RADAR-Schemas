@@ -38,6 +38,12 @@ jobs:
       # - name: Check
       #   run: ./gradlew check
 
+      - name: Publish to GitHub Packages
+        run: ./gradlew publish
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   docker:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
