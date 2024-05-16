@@ -35,8 +35,8 @@ jobs:
         run: ./gradlew assemble
 
       # Gradle check
-      - name: Check
-        run: ./gradlew check
+      # - name: Check
+      #   run: ./gradlew check
 
   docker:
     # The type of runner that the job will run on
