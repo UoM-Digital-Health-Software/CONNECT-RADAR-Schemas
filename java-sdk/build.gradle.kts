@@ -8,7 +8,15 @@ plugins {
     id("org.radarbase.radar-publishing") version Versions.radarCommons apply false
     id("com.github.davidmc24.gradle.plugin.avro-base") version Versions.avroGenerator apply false
     kotlin("plugin.allopen") version Versions.kotlin apply false
+    `maven-publish`
 }
+
+allprojects {
+    version = "0.8.5"
+    group = "uk.ac.uom.dhs"
+}
+
+
 
 radarRootProject {
     projectVersion.set(Versions.project)
@@ -16,11 +24,12 @@ radarRootProject {
 }
 
 // Configuration
-val githubRepoName = "RADAR-base/RADAR-Schemas"
+val githubRepoName = "UoM-Digital-Health-Software/CONNECT-RADAR-Schemas"
 val githubUrl = "https://github.com/${githubRepoName}.git"
 val githubIssueUrl = "https://github.com/$githubRepoName/issues"
 
 subprojects {
+    apply(plugin = "maven-publish")
     apply(plugin = "org.radarbase.radar-kotlin")
 
     radarKotlin {
@@ -36,6 +45,9 @@ subprojects {
             exclude(group = "org.slf4j", module = "slf4j-log4j12")
         }
     }
+
+
+
 }
 
 // Configure applications
@@ -57,24 +69,56 @@ configure(listOf(
     apply(plugin = "org.radarbase.radar-publishing")
 
     radarKotlin {
-        javaVersion.set(Versions.java)
+        javaVersion.set(17)
+    }
+
+        configure<PublishingExtension> {
+    repositories {
+         println("helo world")
+
+        maven {
+            name = "CONNECT-RADAR-Schemas"
+            url = uri("https://maven.pkg.github.com/UoM-Digital-Health-Software/CONNECT-RADAR-Schemas")
+            credentials {
+                username = "jindrich.gorner@manchester.ac.uk"
+                password = ""
+               println("GitHubPackages build.gradle\n\tusername=$username\n\ttoken=$password")
+
+            }
+        }
+    }
+        publications {
+
+            register<MavenPublication>("gpr") {
+                from(components["java"])
+            }
+        }
     }
 
     radarPublishing {
         githubUrl.set("https://github.com/$githubRepoName")
         developers {
             developer {
-                id.set("blootsvoets")
-                name.set("Joris Borgdorff")
-                email.set("joris@thehyve.nl")
-                organization.set("The Hyve")
+                id.set("jindrichgorner")
+                name.set("Jindrich Gorner")
+                email.set("jindrich.gorner@manchester.ac.uk")
+                organization.set("The University of Manchester")
             }
-            developer {
-                id.set("nivemaham")
-                name.set("Nivethika Mahasivam")
-                email.set("nivethika@thehyve.nl")
-                organization.set("The Hyve")
-            }
+
         }
     }
 }
+
+// publishing {
+
+//     repositories {
+//         maven {
+//             name = "CONNECT-RADAR-Schemas"
+//             url = uri("https://maven.pkg.github.com/UoM-Digital-Health-Software/CONNECT-RADAR-Schemas")
+//             credentials {
+//                 username = "jindrich.gorner@manchester.ac.uk"
+//                 password = ""
+//             }
+//         }
+//     }
+// }
