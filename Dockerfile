@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM gradle:8.3-jdk17 as builder
+FROM --platform=$BUILDPLATFORM gradle:8.4-jdk17 as builder
 
 RUN mkdir -p /code/java-sdk
 WORKDIR /code/java-sdk
@@ -37,6 +37,9 @@ ENV KAFKA_SCHEMA_REGISTRY=http://schema-registry-1:8081 \
     CONFIG_PATH="" \
     NO_VALIDATE=""
 
+
+RUN mv /var/lib/dpkg/info /var/lib/dpkg/info_silent
+RUN mkdir /var/lib/dpkg/info
 RUN apt-get update && apt-get install -y \
 		rsync \
     && rm -rf /var/lib/apt/lists/*
