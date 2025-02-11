@@ -12,7 +12,7 @@ plugins {
 }
 
 allprojects {
-    version = "0.8.5"
+    version = "0.8.11"
     group = "uk.ac.uom.dhs"
 }
 
