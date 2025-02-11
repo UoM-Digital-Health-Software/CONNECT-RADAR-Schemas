@@ -32,6 +32,12 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "org.radarbase.radar-kotlin")
 
+    repositories{
+        mavenCentral()
+        gradlePluginPortal()
+        maven(url = "https://jitpack.io")
+    }
+
     radarKotlin {
         javaVersion.set(Versions.java)
         kotlinVersion.set(Versions.kotlin)
