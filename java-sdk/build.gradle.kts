@@ -12,7 +12,7 @@ plugins {
 }
 
 allprojects {
-    version = "0.8.5"
+    version = "0.8.11"
     group = "uk.ac.uom.dhs"
 }
 
@@ -31,6 +31,12 @@ val githubIssueUrl = "https://github.com/$githubRepoName/issues"
 subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "org.radarbase.radar-kotlin")
+
+    repositories{
+        mavenCentral()
+        gradlePluginPortal()
+        maven(url = "https://jitpack.io")
+    }
 
     radarKotlin {
         javaVersion.set(Versions.java)
