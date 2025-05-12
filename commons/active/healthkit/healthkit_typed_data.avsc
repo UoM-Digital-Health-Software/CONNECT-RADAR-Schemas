@@ -25,11 +25,6 @@
       "doc": "The identifier of the app that produced the data."
     },
     {
-      "name": "sourceName",
-      "type": "string",
-      "doc": "The name of the app that produced the data (as it appears to the user)."
-    },
-    {
       "name": "unit",
       "type": "string",
       "doc": "The unit of the measurement."
