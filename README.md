@@ -10,7 +10,47 @@
   - In the `passive` subdirectory, add schemas for passive data collection, like wearables.
   - In the `stream` subdirectory, add schemas used in Kafka Streams.
 - The `specifications` directory contains specifications of what data types are collected through which devices.
-  - Java SDKs for each of the components are provided in the `java-sdk` folder, see installation instructions there. They are automatically generated from the Avro schemas using the Avro specification (version in [Versions.kt](java-sdk/buildSrc/src/main/kotlin/Versions.kt)).
+- Java SDKs for each of the components are provided in the `java-sdk` folder, see installation instructions there. They are automatically generated from the Avro schemas using the Avro 1.8.2 specification.
+
+
+## Publish as Github package
+
+- Change version in Versions.kt, follow the following pattern 
+
+```
+<new-version>-CONNECT
+```
+
+- if we keep the version same as the one from the Hyve team we will not be able to consume it in our other repos 
+- Go to build.gradle.kts in ./java-sdk and find this block 
+
+```
+        maven {
+            name = "CONNECT-RADAR-Schemas"
+            url = uri("https://maven.pkg.github.com/UoM-Digital-Health-Software/CONNECT-RADAR-Schemas")
+            credentials {
+                username = "<github_username>"
+                password = "<github_token>"
+               println("GitHubPackages build.gradle\n\tusername=$username\n\ttoken=$password")
+
+            }
+        }
+```
+
+
+And provide your github username and a token that enables you to push packages ( you will need to create this one in the Github settings )
+
+- go to ./java-sdk and build the repo 
+
+```
+gradle build -x test 
+```
+
+- once done then run **npm publish**, this should push the package to the Gitbhu repo and you should be able to find it here: 
+
+```
+https://github.com/UoM-Digital-Health-Software/CONNECT-RADAR-Schemas/packages/
+```
 
 ## Usage
 
@@ -156,16 +196,14 @@ docker-compose run --rm tools radar-schemas-tools schema-topic --ensure -f schem
       sasl.mechanism: PLAIN
     ```
 
-    1.2. Run `create` command
+    1.2. Run `topic-create` command
 
     ```
-    docker run --rm -v "$PWD/config.yaml:/etc/radar-schemas-tools/config.yaml" radarbase/radar-schemas-tools radar-schemas-tools create -c /etc/radar-schemas-tools/config.yaml /schema/merged
+    docker run --rm -v "$PWD/config.yaml:/etc/radar-schemas-tools/config.yaml" radarbase/radar-schemas-tools radar-schemas-tools topic-create -c /etc/radar-schemas-tools/config.yaml /schema/merged
     ```
 
 2. Register schemas on Confluent Cloud schema registry
 
     ```
-    docker run --rm -v "$PWD/config.yaml:/etc/radar-schemas-tools/config.yaml" radarbase/radar-schemas-tools radar-schemas-tools register -c /etc/radar-schemas-tools/config.yaml -u SR_API_KEY -p SR_API_SECRET SR_ENDPOINT /schema/merged
+    docker run --rm radarbase/kafka-init radar-schemas-tools register SR_ENDPOINT -u SR_API_KEY -p SR_API_SECRET /schema/merged
     ```
-   
-   Note that the `SR_ENDPOINT` and `/schema/merged` are positional arguments and should be placed at the end of the command.
