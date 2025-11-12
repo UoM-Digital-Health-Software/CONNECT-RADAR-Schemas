@@ -1,5 +1,13 @@
 # RADAR-Schemas
 
+Please refer to here for any other CONNECT related documentation: 
+
+```
+https://github.com/UoM-Digital-Health-Software/CONNECT/tree/main/mobile/CONNECT_DOCS
+```
+
+
+
 [Avro schemas](https://avro.apache.org/docs/1.9.2/spec.html) used in RADAR-base. The schemas are organized as follows:
 
 - The `commons` directory contains all schemas used inside Kafka and data fed into Kafka.
