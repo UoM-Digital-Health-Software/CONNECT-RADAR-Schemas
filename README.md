@@ -46,7 +46,7 @@ And provide your github username and a token that enables you to push packages (
 gradle build -x test 
 ```
 
-- once done the run **npm publish**, this should push the package to the Gitbhu repo and you should be able to find it here: 
+- once done then run **npm publish**, this should push the package to the Gitbhu repo and you should be able to find it here: 
 
 ```
 https://github.com/UoM-Digital-Health-Software/CONNECT-RADAR-Schemas/packages/
