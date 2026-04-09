@@ -2,12 +2,12 @@ import org.radarbase.gradle.plugin.radarKotlin
 import org.radarbase.gradle.plugin.radarPublishing
 
 plugins {
-    id("org.radarbase.radar-root-project") version Versions.radarCommons
-    id("org.radarbase.radar-dependency-management") version Versions.radarCommons
-    id("org.radarbase.radar-kotlin") version Versions.radarCommons apply false
-    id("org.radarbase.radar-publishing") version Versions.radarCommons apply false
-    id("com.github.davidmc24.gradle.plugin.avro-base") version Versions.avroGenerator apply false
-    kotlin("plugin.allopen") version Versions.kotlin apply false
+    alias(libs.plugins.radar.root.project)
+    alias(libs.plugins.radar.dependency.management)
+    alias(libs.plugins.radar.kotlin) apply false
+    alias(libs.plugins.radar.publishing) apply false
+    alias(libs.plugins.avro.base) apply false
+    alias(libs.plugins.kotlin.allopen) apply false
     `maven-publish`
 }
 
@@ -19,8 +19,8 @@ allprojects {
 
 
 radarRootProject {
-    projectVersion.set(Versions.project)
-    gradleVersion.set(Versions.gradle)
+    projectVersion.set(libs.versions.project)
+    gradleVersion.set(libs.versions.gradle)
 }
 
 // Configuration
@@ -32,85 +32,64 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "org.radarbase.radar-kotlin")
 
-    repositories{
+    repositories {
         mavenCentral()
         gradlePluginPortal()
         maven(url = "https://jitpack.io")
     }
 
     radarKotlin {
-        javaVersion.set(Versions.java)
-        kotlinVersion.set(Versions.kotlin)
-        slf4jVersion.set(Versions.slf4j)
-        log4j2Version.set(Versions.log4j2)
-        junitVersion.set(Versions.junit)
+        log4j2Version.set(rootProject.libs.versions.log4j2)
+        sentryEnabled.set(false)
+    }
+
+    // --- Vulnerability fixes start ---
+    dependencies {
+        constraints {
+            add("implementation", rootProject.libs.jackson.bom) {
+                because("Force safe version of Jackson across all modules")
+            }
+            add("implementation", rootProject.libs.apache.commons.lang) {
+                because("Force safe version of commons-lang across all modules")
+            }
+        }
     }
 
     configurations.all {
-        resolutionStrategy {
-            /* The entries in the block below are added here to force the version of
-            *  transitive dependencies and mitigate reported vulnerabilities */
-            force(
-                "com.fasterxml.jackson.core:jackson-databind:2.17.2",
-                "org.apache.commons:commons-lang3:3.18.0"
-            )
+        resolutionStrategy.dependencySubstitution {
+            // Substitute the old group/module with the new one
+            substitute(module("org.lz4:lz4-java"))
+                .using(module(rootProject.libs.lz4.get().toString()))
+                .because("Force safe version of LZ4 across all modules")
         }
     }
-
-    afterEvaluate {
-        configurations.all {
-            exclude(group = "org.slf4j", module = "slf4j-log4j12")
-        }
-    }
-
-
+    // --- Vulnerability fixes end ---
 
 }
 
-// Configure applications
-configure(listOf(
-    project(":radar-schemas-tools"),
-    project(":radar-catalog-server"),
-)) {
+configure(
+    listOf(
+        project(":radar-schemas-tools"),
+        project(":radar-catalog-server"),
+    ),
+) {
     apply(plugin = "application")
-}
-
-// Configure libraries
-configure(listOf(
-    project(":radar-schemas-commons"),
-    project(":radar-schemas-core"),
-    project(":radar-schemas-registration")
-)) {
-    apply(plugin = "java-library")
-    apply(plugin = "org.radarbase.radar-kotlin")
-    apply(plugin = "org.radarbase.radar-publishing")
 
     radarKotlin {
-        javaVersion.set(17)
+        log4j2Version.set(rootProject.libs.versions.log4j2)
+        sentryEnabled.set(true)
     }
+}
 
-        configure<PublishingExtension> {
-    repositories {
-         println("helo world")
-
-        maven {
-            name = "CONNECT-RADAR-Schemas"
-            url = uri("https://maven.pkg.github.com/UoM-Digital-Health-Software/CONNECT-RADAR-Schemas")
-            credentials {
-                username = "jindrich.gorner@manchester.ac.uk"
-                password = ""
-               println("GitHubPackages build.gradle\n\tusername=$username\n\ttoken=$password")
-
-            }
-        }
-    }
-        publications {
-
-            register<MavenPublication>("gpr") {
-                from(components["java"])
-            }
-        }
-    }
+configure(
+    listOf(
+        project(":radar-schemas-commons"),
+        project(":radar-schemas-core"),
+        project(":radar-schemas-registration"),
+    ),
+) {
+    apply(plugin = "java-library")
+    apply(plugin = "org.radarbase.radar-publishing")
 
     radarPublishing {
         githubUrl.set("https://github.com/$githubRepoName")
