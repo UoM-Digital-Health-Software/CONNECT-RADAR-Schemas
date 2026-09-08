@@ -44,20 +44,9 @@ subprojects {
     }
 
     // --- Vulnerability fixes start ---
-    dependencies {
-        constraints {
-            add("implementation", rootProject.libs.jackson.bom) {
-                because("Force safe version of Jackson across all modules")
-            }
-            add("implementation", rootProject.libs.apache.commons.lang) {
-                because("Force safe version of commons-lang across all modules")
-            }
-        }
-    }
-
     configurations.all {
         resolutionStrategy.dependencySubstitution {
-            // Substitute the old group/module with the new one
+            // Substitute the old group/module with drop-in replacement
             substitute(module("org.lz4:lz4-java"))
                 .using(module(rootProject.libs.lz4.get().toString()))
                 .because("Force safe version of LZ4 across all modules")
@@ -75,6 +64,17 @@ configure(
 ) {
     apply(plugin = "application")
 
+    // --- Vulnerability fixes start for applications --
+    dependencies {
+        constraints {
+            // Force safe version of Jackson across all modules
+            add("implementation", rootProject.libs.jackson.databind) {
+                version { strictly(rootProject.libs.versions.jackson.get()) }
+            }
+        }
+    }
+    // --- Vulnerability fixes end ---
+
     radarKotlin {
         log4j2Version.set(rootProject.libs.versions.log4j2)
         sentryEnabled.set(true)
@@ -90,6 +90,21 @@ configure(
 ) {
     apply(plugin = "java-library")
     apply(plugin = "org.radarbase.radar-publishing")
+
+    // --- Vulnerability fixes start for libraries ---
+    dependencies {
+        constraints {
+            val jacksonVersion = rootProject.libs.versions.jackson.get()
+            // Force safe version of Jackson across all modules
+            add("api", "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+            add("api", "com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+            add("api", "com.fasterxml.jackson:jackson-bom:$jacksonVersion")
+            // Force safe version of commons-lang across all modules
+            val commonsLangVersion = rootProject.libs.versions.apacheCommonsLang.get()
+            add("api", "org.apache.commons:commons-lang3:$commonsLangVersion")
+        }
+    }
+    // --- Vulnerability fixes end ---
 
     radarPublishing {
         githubUrl.set("https://github.com/$githubRepoName")
